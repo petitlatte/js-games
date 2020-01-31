@@ -1,13 +1,12 @@
 ////////////////////////////////////EMPTY VARIABLES////////////////////////////////////////////
 var gamePiece;
-var obstacles;	
+var obstacles = [];	
 
 
 //////////////////////////////////////FUNCTIONS///////////////////////////////////////////////
 
 	function startGame(){
 				gamePiece = new component(30,30,"teal",10,120);
-				obstacles = new component(10, 200, "red", 300,120);
 				gameCanvas.start();
 	}
 
@@ -16,17 +15,18 @@ var obstacles;
 	var gameCanvas = {
 		canvas : document.createElement("canvas"),
 		start : function() {
-			this.canvas.width = 800;
-			this.canvas.height = 600;
+			this.canvas.width = 480;
+			this.canvas.height = 270;
 			this.context = this.canvas.getContext("2d");
 			document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+			this.frameNo = 0;
 			this.interval = setInterval(updateGameArea, 20);
-			window.addEventListener("keydown",function(e){
-				gameCanvas.key =e.keyCode;
-			});
-			window.addEventListener("keyup",function(e){
-				gameCanvas.key = false;
-			});
+			// window.addEventListener("keydown",function(e){
+			// 	gameCanvas.key =e.keyCode;
+			// });
+			// window.addEventListener("keyup",function(e){
+			// 	gameCanvas.key = false;
+			// });
 
 		},
 		clear: function(){
@@ -49,12 +49,12 @@ var obstacles;
 		ctx = gameCanvas.context;
 		ctx.fillStyle = color;
 		ctx.fillRect(this.x,this.y,this.width,this.height);
-		}
+		};
 
   this.newPos = function() {
     this.x += this.speedX;
     this.y += this.speedY;
-  }
+  };
 
 		this.crashWith = function(otherobj) {
 			var myLeft = this.x;
@@ -75,18 +75,35 @@ var obstacles;
 
 	//update game area
 	function updateGameArea(){
-		if (gamePiece.crashWith(obstacles)) {
+		var x, y;
+		for (i = 0; i < obstacles.length; i += 1) {
+			if (gamePiece.crashWith(obstacles[i])) {
 			gameCanvas.stop();
-		} else {
+			return;
+		}
+} 
 		gameCanvas.clear();
-		obstacles.x += -1;		
-		obstacles.update();
-        gamePiece.x += gamePiece.speedX;
-        gamePiece.y += gamePiece.speedY; 					
+		gameCanvas.frameNo += 1;
+		if (gameCanvas.frameNo == 1 || everyinterval(150)) {
+			x = gameCanvas.canvas.width;
+			y = gameCanvas.canvas.height - 200;
+			obstacles.push (new component(10, 200, "green",x,y));
+
+		}
+		for (i = 0; i < obstacles.length; i += 1) {
+			obstacles[i].x += -1;
+		obstacles[i].update();
+		}					
 		gamePiece.newPos();
 		gamePiece.update();	
 	}
-}
+
+
+	function everyinterval(n){
+		if((gameCanvas.frameNo/ n) % 1 == 0){return true;}
+		return false;
+	}
+	
 
 	function moveUp(){
 		gamePiece.speedY -= 1;
