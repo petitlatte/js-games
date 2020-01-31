@@ -86,9 +86,15 @@ var obstacles = [];
 		gameCanvas.frameNo += 1;
 		if (gameCanvas.frameNo == 1 || everyinterval(150)) {
 			x = gameCanvas.canvas.width;
-			y = gameCanvas.canvas.height - 200;
-			obstacles.push (new component(10, 200, "green",x,y));
+			minHeight = 20,
+			maxHeight = 200;
+			height = Math.floor(Math.random()*(maxHeight-minHeight+1) + minHeight);
+			minGap = 50;
+			maxGap = 200;
+			gap = Math.floor(Math.random()* (maxGap - minGap + 1) + minGap);
 
+			obstacles.push (new component(10, height, "green",x,0));
+			obstacles.push (new component(10, x- height - gap, "green",x,height + gap));
 		}
 		for (i = 0; i < obstacles.length; i += 1) {
 			obstacles[i].x += -1;
