@@ -141,5 +141,12 @@ var score;
 		gamePiece.gravity = n;
 	}
 
+//button text function
+
+function btntxt(){
+	var btn = document.getElementById("controlbtn");
+	btn.value = "Start!";
+	btn.innerHTML = "Accelerate!";
+}
 
 ////////////////////////////////////////////////////END//////////////////////////////////////////////////
