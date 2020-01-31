@@ -1,12 +1,14 @@
 ////////////////////////////////////EMPTY VARIABLES////////////////////////////////////////////
 var gamePiece;
-var obstacles = [];	
+var obstacles = [];
+var score;	
 
 
 //////////////////////////////////////FUNCTIONS///////////////////////////////////////////////
 
 	function startGame(){
-				gamePiece = new component(30,30,"teal",10,120);
+				gamePiece = new component(30,30,"img/heart.png",10,120, "image");
+				score = new component("28px", "Consolas", "red", 280, 40, "text");
 				gameCanvas.start();
 	}
 
@@ -38,7 +40,12 @@ var obstacles = [];
 	};
 
 	//gamepiece component
-	function component(width,height,color,x,y){
+	function component(width,height,color,x,y,type){
+		this.type =type;
+		if (type == "image"){
+			this.image = new Image();
+			this.image.src = color;
+		}
 		this.width= width;
 		this.height = height;
 		this.x = x;
@@ -47,10 +54,24 @@ var obstacles = [];
 		this.speedY = 0;
 		this.update = function(){
 		ctx = gameCanvas.context;
+
+		if (type == "image"){
+			ctx.drawImage(this.image,
+				this.x,
+				this.y,
+				this.width, this.height);
+		} else 
+			if (this.type == "text"){
+			ctx.font = this.width + " " + this.height;
+			ctx.fillStyle = color;
+			ctx.fillText(this.text, this.x,this.y);
+		} 
+
+		else {
 		ctx.fillStyle = color;
 		ctx.fillRect(this.x,this.y,this.width,this.height);
 		};
-
+}
   this.newPos = function() {
     this.x += this.speedX;
     this.y += this.speedY;
@@ -93,13 +114,15 @@ var obstacles = [];
 			maxGap = 200;
 			gap = Math.floor(Math.random()* (maxGap - minGap + 1) + minGap);
 
-			obstacles.push (new component(10, height, "green",x,0));
-			obstacles.push (new component(10, x- height - gap, "green",x,height + gap));
+			obstacles.push (new component(10, height, "white",x,0));
+			obstacles.push (new component(10, x- height - gap, "white",x,height + gap));
 		}
 		for (i = 0; i < obstacles.length; i += 1) {
 			obstacles[i].x += -1;
 		obstacles[i].update();
-		}					
+		}				
+		score.text = "SCORE: " + gameCanvas.frameNo;
+		score.update();	
 		gamePiece.newPos();
 		gamePiece.update();	
 	}
