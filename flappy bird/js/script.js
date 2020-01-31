@@ -13,12 +13,18 @@ var gamePiece;
 	//Game Canvas
 	var gameCanvas = {
 		canvas : document.createElement("canvas"),
-		start : function(){
+		start : function() {
 			this.canvas.width = 800;
 			this.canvas.height = 600;
 			this.context = this.canvas.getContext("2d");
 			document.body.insertBefore(this.canvas, document.body.childNodes[0]);
 			this.interval = setInterval(updateGameArea, 20);
+			window.addEventListener("keydown",function(e){
+				gameCanvas.key =e.keyCode;
+			})
+			window.addEventListener("keyup",function(e){
+				gameCanvas.key = false;
+			})
 
 		},
 		clear: function(){
@@ -48,6 +54,12 @@ var gamePiece;
 	//update game area
 	function updateGameArea(){
 		gameCanvas.clear();
+		gamePiece.speedX = 0;
+		gamePiece.speedY = 0;
+		if (gameCanvas.key && gameCanvas.key == 37){ gamePiece.speedX= -1; }
+		if (gameCanvas.key && gameCanvas.key == 39){ gamePiece.speedX=  1; }
+		if (gameCanvas.key && gameCanvas.key == 38){ gamePiece.speedY= -1; }
+		if (gameCanvas.key && gameCanvas.key == 40){ gamePiece.speedY=  1; }						
 		gamePiece.newPos();
 		gamePiece.update();
 	}
