@@ -8,6 +8,7 @@ var score;
 
 	function startGame(){
 				gamePiece = new component(30,30,"img/heart.png",10,120, "image");
+				gamePiece.gravity = 0.05;
 				score = new component("28px", "Consolas", "red", 280, 40, "text");
 				gameCanvas.start();
 	}
@@ -22,22 +23,12 @@ var score;
 			this.context = this.canvas.getContext("2d");
 			document.body.insertBefore(this.canvas, document.body.childNodes[0]);
 			this.frameNo = 0;
-			this.interval = setInterval(updateGameArea, 20);
-			// window.addEventListener("keydown",function(e){
-			// 	gameCanvas.key =e.keyCode;
-			// });
-			// window.addEventListener("keyup",function(e){
-			// 	gameCanvas.key = false;
-			// });
-
+			updateGameArea();
 		},
 		clear: function(){
 			this.context.clearRect(0,0,this.canvas.width, this.canvas.height);
-		},
-		stop: function(){
-			clearInterval(this.interval);
 		}
-	};
+	}
 
 	//gamepiece component
 	function component(width,height,color,x,y,type){
@@ -46,12 +37,15 @@ var score;
 			this.image = new Image();
 			this.image.src = color;
 		}
-		this.width= width;
+		this.score = 0;
+		this.width = width;
 		this.height = height;
+		this.speedX = 0;
+		this.speedY = 0;		
 		this.x = x;
   		this.y = y;
-		this.speedX = 0;
-		this.speedY = 0;
+		this.gravity = 0;
+		this.gravitySpeed = 0;
 		this.update = function(){
 		ctx = gameCanvas.context;
 
@@ -70,19 +64,29 @@ var score;
 		else {
 		ctx.fillStyle = color;
 		ctx.fillRect(this.x,this.y,this.width,this.height);
-		};
+		}
 }
+
   this.newPos = function() {
+  	this.gravitySpeed += this.gravity;
     this.x += this.speedX;
-    this.y += this.speedY;
-  };
+    this.y += this.speedY + this.gravitySpeed;
+    this.hitBottom();
+  }
+  this.hitBottom = function(){
+  	var rockbottom = gameCanvas.canvas.height - this.height;
+  	if (this.y > rockbottom) {
+  		this.y = rockbottom;
+  		this.gravitySpeed = 0;
+  	}
+  }
 
 		this.crashWith = function(otherobj) {
 			var myLeft = this.x;
 			var myRight = this.x + (this.width);
 			var myTop = this.y;
 			var myBottom = this.y + (this.height);
-			var otherLeft = otherobj.x; //error?
+			var otherLeft = otherobj.x;
 			var otherRight = otherobj.x + (otherobj.width);
 			var otherTop = otherobj.y;
 			var otherBottom = otherobj.y + (otherobj.height);
@@ -91,15 +95,14 @@ var score;
 				crash = false;
 		}
 		return crash;
-	};
+	}
 }	
 
 	//update game area
 	function updateGameArea(){
-		var x, y;
+		var x, height, gap, minHeight, maxHeight, minGap,maxGap;
 		for (i = 0; i < obstacles.length; i += 1) {
 			if (gamePiece.crashWith(obstacles[i])) {
-			gameCanvas.stop();
 			return;
 		}
 } 
@@ -133,21 +136,9 @@ var score;
 		return false;
 	}
 	
-
-	function moveUp(){
-		gamePiece.speedY -= 1;
-	}
-
-	function moveDown(){
-		gamePiece.speedY += 1;
-	}
-
-	function moveLeft(){
-		gamePiece.speedX -= 1;
-	}
-
-	function moveRight(){
-		gamePiece.speedX += 1;
+	function accelerate(n){
+		if(!gameCanvas.interval){gameCanvas.interval = setInterval(updateGameArea,20);}
+		gamePiece.gravity = n;
 	}
 
 
